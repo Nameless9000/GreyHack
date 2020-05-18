@@ -17,9 +17,8 @@ if not result then exit("Program ended")
 if typeof(result) != "file" then exit("Error: expected file, obtained: " + result)
 if not result.is_folder then exit("Error: expected folder, obtained file: " + result.path)
 if not result.has_permission("r") then exit("Error: can't access to " + result.path + ". Permission denied." )
-GetPassword = function(userPass)
-	if userPass.len != 2 then exit("hashcat: " + file.path + " wrong syntax")
-	password = cryptools.decipher(userPass[0], userPass[1])
+GetPassword = function(user,pass)
+	password = cryptools.decipher(user, pass)
 	return password
 end function
 Crack = function(result)
@@ -28,7 +27,7 @@ Crack = function(result)
 	password = null
 	
 	userPass = hash.split(":")
-	password = GetPassword(userPass)
+	password = GetPassword(userPass[0],userPass[1])
 	
 	if not password then return null
 	return password
