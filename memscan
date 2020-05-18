@@ -1,7 +1,7 @@
 //Memory Scanner		file: memscan				
 
 print("<b>-= Memory Scanner 1.0 =-</b>")			// this will print text on screen and <b> is for bold
-if params.len != 2 or params[0] == "-h" or params[0] == "--help" then exit("<b>Usage: bscanner [ip_address] [port]</b>\n<b>Description:</b>\nScript made to remote scan for exploits and showing all the results.\nby IZackI")		// if this condition is true exit with message in quotes / params.len - check how many parameters for the script is provided / params[0] == "-h" - check if first parameter is equal the same as in quotes
+if params.len != 2 or params[0] == "-h" or params[0] == "--help" then exit("<b>Usage: memscan [ip_address] [port]</b>\n<b>Description:</b>\nScript made to remote scan for exploits and showing all the results.\nby Nameless")		// if this condition is true exit with message in quotes / params.len - check how many parameters for the script is provided / params[0] == "-h" - check if first parameter is equal the same as in quotes
 metaxploit = include_lib("/lib/metaxploit.so")		// sets value for ver metaxploit an external library
 if not metaxploit then exit("<color=#ff0000>Error: Unable to find 'metaxploit.so'. Put missing library in the 'lib' folder.</color>")		// if ver metaxploit is not present exits with red message in quotes
 
