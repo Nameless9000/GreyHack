@@ -1,0 +1,22 @@
+//command: hashcat
+cryptools = include_lib("/lib/crypto.so")
+if not cryptools then exit("Error: Missing crypto library")
+
+GetPassword = function(userPass)
+	if userPass.len != 2 then exit("hashcat: " + file.path + " wrong syntax")
+	password = cryptools.decipher(userPass[0], userPass[1])
+	return password
+end function
+
+if params.len != 1 or params[0] == "-h" or params[0] == "--help" then exit("Usage: hashcat [hash]")
+
+hash = params[0]
+
+password = null
+
+userPass = hash.split(":")
+password = GetPassword(userPass)
+	
+if not password then exit("Can't find password :(")
+print("Cracked! Login: "+userPass[0]+"@"+password)
+	
