@@ -1,0 +1,22 @@
+//Memory Scanner		file: memscan				
+
+print("<b>-= Memory Scanner 1.0 =-</b>")			// this will print text on screen and <b> is for bold
+if params.len != 2 or params[0] == "-h" or params[0] == "--help" then exit("<b>Usage: bscanner [ip_address] [port]</b>\n<b>Description:</b>\nScript made to remote scan for exploits and showing all the results.\nby IZackI")		// if this condition is true exit with message in quotes / params.len - check how many parameters for the script is provided / params[0] == "-h" - check if first parameter is equal the same as in quotes
+metaxploit = include_lib("/lib/metaxploit.so")		// sets value for ver metaxploit an external library
+if not metaxploit then exit("<color=#ff0000>Error: Unable to find 'metaxploit.so'. Put missing library in the 'lib' folder.</color>")		// if ver metaxploit is not present exits with red message in quotes
+
+address = params[0]			// sets var address to parameter 0
+port = params[1].to_int		// sets var port to parameter 1 - var ports needs to be intiger
+net_session = metaxploit.net_use(address, port)		// connects to provided IP address using metaxploit lib
+if not net_session then exit("<color=#ff0000>Error: Unable to connect.</color>")		// if connection is not established prints red text and exits
+print("-- Scanning --")		// this will print text on screen
+metaLib = net_session.dump_lib		// this will set ver metaLib to get to the connected library
+scan = metaxploit.scan(metaLib)		// scans a metaLib for vulnerable memory addresses and returns them in a list 
+i = 0		// sets var i to 0
+for entry in scan		// loop for will do for each entry in scan
+	i = i+1		// sets var i to (i=0)+1
+	memory_scan = metaxploit.scan_address(metaLib, entry)		// scans a specific memory address and returns information about all its vulnerabilities
+	print("<b>"+i+". "+entry+"</b>\n"+memory_scan)		// prints entry and its vulnerabilities
+end for		// end of loop for
+print(metaLib.lib_name+" v"+metaLib.version)		// shows on screen name and version of scanned library
+exit("-- Scan complete --")		// exit program with message
