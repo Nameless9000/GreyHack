@@ -1,0 +1,14 @@
+//Command: shell
+if params.len < 2 or params.len > 3 then exit("Usage: shell [login] [ip] [port]")
+credentials = params[0].split("@")
+user = credentials[0]
+password = credentials[1]
+
+port = 80
+// params is a list of strings, so you have to convert it to integer, which is what connect_service accepts.
+if params.len == 3 then port = params[2].to_int
+if typeof(port) != "number" then exit("Invalid port: " + port)
+print("Connecting...")
+
+shell = get_shell.connect_service(params[1], port, user, password)
+if shell then shell.start_terminal
