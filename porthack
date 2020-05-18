@@ -1,0 +1,71 @@
+if params.len != 1 then exit("usage: porthack [ip]")
+ip = params[0]
+
+metaxploit = include_lib("/lib/metaxploit.so")
+
+HandleResult = function(result)
+	print("<color=red>"+typeof(result))
+
+	if typeof(result) == "file" then
+		print(file.name)
+		files = result.get_files + result.get_folders
+		for file in files
+			print(file.name+" "+file.owner)
+		end for
+	end if
+
+	if typeof(result) == "computer" then
+		if result.File("/etc/passwd") then print(result.File("/etc/passwd").content)
+	end if
+	if typeof(result) == "shell" then
+		connect = user_input("open shell (y/n) ")
+		if connect == "y" then result.start_terminal
+	end if
+end function
+
+parse = function(result)
+	found = 0
+	List = []
+	line = result.split(" ")
+	line.reverse
+	for word in line
+		if found == 1 then
+			word = word.remove(".")
+			word = word.remove("<b>")
+			word = word.remove("</b>")
+			List.push(word)
+			found = 0
+		end if
+
+		if found == 0 then
+			if word == "Buffer" then
+				found = 1
+			end if		
+		end if
+	end for
+
+	return List
+end function
+
+router = get_router(ip)
+ports = router.used_ports
+for port in ports
+	print(port.get_lan_ip+" "+port.port_number)
+end for
+TargetPort = user_input("port: ").to_int
+
+net = metaxploit.net_use(ip,TargetPort)
+if not net then exit("conection failed!")
+Lib = net.dump_lib
+print("Target lib: "+Lib.lib_name+" "+Lib.version)
+
+Memories = metaxploit.scan(Lib)
+for memory in Memories
+	print("<color=red>Scanning mem: "+memory)
+	results = metaxploit.scan_address(Lib,memory)
+	for payload in parse(results)
+		print(memory+" "+payload)
+		result = Lib.overflow(memory,payload,"pass123")
+		if result then HandleResult(result)
+	end for
+end for
