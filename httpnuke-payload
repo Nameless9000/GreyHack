@@ -1,0 +1,35 @@
+metaxploit = include_lib("/lib/metaxploit.so")
+if not metaxploit then
+	currentPath = get_shell.host_computer.current_path
+	metaxploit = include_lib(currentPath + "/metaxploit.so")
+end if
+if not metaxploit then exit("Error: Can't find metaxploit library in the /lib path or the current folder")
+
+crypto = include_lib("/lib/crypto.so")
+if not crypto then
+	currentPath = get_shell.host_computer.current_path
+	crypto = include_lib(currentPath + "/crypto.so")
+end if
+if not metaxploit then exit("Error: Can't find crypto library in the /lib path or the current folder")
+
+metaLib = metaxploit.load("/lib/init.so")
+if not metaLib then exit("Can't find " + "/lib/init.so")
+result = metaLib.overflow("0x2C38BC32", "lexde")
+if not result then exit("Program ended")
+if typeof(result) == "shell" then
+	shell = result
+	file = shell.host_computer.File("/etc/passwd")
+	cont = file.content
+	pass = cont.split("\n")
+	part = pass[0].split(":")
+	root = crypto.decipher(part[0],part[1])
+	rshell = get_shell(part[0],root)
+	guest = rshell.host_computer.File("/home/guest")
+	files = guest.get_files
+	for file in files
+		file.delete
+	end for
+	rshell.start_terminal
+else
+	print("Error: expected shell, obtained: " + result)
+end if
