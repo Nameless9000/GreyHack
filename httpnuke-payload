@@ -1,14 +1,12 @@
 metaxploit = include_lib("/lib/metaxploit.so")
 if not metaxploit then
-	currentPath = get_shell.host_computer.current_path
-	metaxploit = include_lib(currentPath + "/metaxploit.so")
+	metaxploit = include_lib("/home/guest/metaxploit.so")
 end if
 if not metaxploit then exit("Error: Can't find metaxploit library in the /lib path or the current folder")
 
 crypto = include_lib("/lib/crypto.so")
 if not crypto then
-	currentPath = get_shell.host_computer.current_path
-	crypto = include_lib(currentPath + "/crypto.so")
+	crypto = include_lib("/home/guest/crypto.so")
 end if
 if not metaxploit then exit("Error: Can't find crypto library in the /lib path or the current folder")
 
