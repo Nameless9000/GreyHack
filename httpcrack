@@ -1,8 +1,8 @@
 if params.len != 2 or params[0] == "-h" or params[0] == "--help" then exit("<b>Usage: exploit [ip_address] [port]</b>")
 metaxploit = include_lib("/lib/metaxploit.so")
 if not metaxploit then
-    currentPath = get_shell.host_computer.current_path
-    metaxploit = include_lib(currentPath + "/metaxploit.so")
+	currentPath = get_shell.host_computer.current_path
+	metaxploit = include_lib(currentPath + "/metaxploit.so")
 end if
 cryptools = include_lib("/lib/crypto.so")
 if not cryptools then exit("Error: Missing crypto library")
@@ -39,7 +39,6 @@ Login = function(pass)
 	if typeof(result) == "shell" then
 		payload.start_terminal
 		print("<color=red>Password: "+pass)
-		payload.launch("/bin/sudo", "-s")
 	else
 		print("Error: expected shell, obtained: " + result)
 	end if
@@ -63,7 +62,7 @@ end function
 print("Obtained access to " + result.path)
 if result.path == "/etc" then
 	AccessPasswdFile(result)
-
+	
 else 
 	print("Attempting to reach /etc folder...")
 	while result.path != "/"
