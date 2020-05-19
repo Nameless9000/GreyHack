@@ -5,15 +5,15 @@ metaxploit = include_lib("/lib/metaxploit.so")
 
 HandleResult = function(result)
 	print("<color=red>"+typeof(result))
-
+	
 	if typeof(result) == "file" then
-		print(file.name)
+		print(result.name)
 		files = result.get_files + result.get_folders
 		for file in files
 			print(file.name+" "+file.owner)
 		end for
 	end if
-
+	
 	if typeof(result) == "computer" then
 		if result.File("/etc/passwd") then print(result.File("/etc/passwd").content)
 	end if
@@ -36,14 +36,14 @@ parse = function(result)
 			List.push(word)
 			found = 0
 		end if
-
+		
 		if found == 0 then
 			if word == "Buffer" then
 				found = 1
 			end if		
 		end if
 	end for
-
+	
 	return List
 end function
 
@@ -68,4 +68,4 @@ for memory in Memories
 		result = Lib.overflow(memory,payload,"pass123")
 		if result then HandleResult(result)
 	end for
-end for
+	end for
