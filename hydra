@@ -1,0 +1,23 @@
+ip = params[0]
+port = params[1]
+user = params[2]
+dir = get_shell.host_computer.File(home_dir+params[3])
+showuse = function()
+	exit("Usage: exploit [ip] [port] [username] [password list]")
+end function
+if not ip then showuse()
+if not port then showuse()
+if not user then showuse()
+if not dir then showuse()
+
+passwords = dir.content.split("\n")
+
+for word in passwords
+	Server = get_shell.conect_service(ip,port,user,word)
+	if not Server then
+		
+	else
+		print("<color=yellow><b>"+user+"@"+word)
+		Server.start_terminal
+	end if
+end for
