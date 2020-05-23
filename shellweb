@@ -1,0 +1,47 @@
+if params.len != 2 or params[0] == "-h" or params[0] == "--help" then exit("<b>Usage: exploit [ip_address] [port]</b>")
+metaxploit = include_lib("/lib/metaxploit.so")
+if not metaxploit then
+    currentPath = get_shell.host_computer.current_path
+    metaxploit = include_lib(currentPath + "/metaxploit.so")
+end if
+if not metaxploit then exit("Error: Can't find metaxploit library in the /lib path or the current folder")
+address = params[0]
+port = params[1].to_int
+net_session = metaxploit.net_use( address, port )
+if not net_session then exit("Error: can't connect to net session")
+metaLib = net_session.dump_lib
+
+quit = function(shell,pass)
+	print("Root Password:")
+	get_shell.launch("/bin/decipher",pass)
+	shell.start_terminal
+end function
+
+shell = null
+pass = null
+memory = metaxploit.scan(metaLib)
+for mem in memory
+	address = metaxploit.scan_address(metaLib,mem).split("Unsface check: ")
+	for add in address
+		if add == address[0] then continue
+		if shell and pass then quit(shell,pass)
+		
+		value = add[add.indexOf("<b>")+3:add.indexOf("</b>")]
+		value = value.replace("\n","")
+		result = metaLib.overflow(mem,value)
+
+		if typeof(result) != "shell" and typeof(result) != "computer" then continue
+		if typeof(result) == "shell" then shell = result
+		if typeof(result) == "shell" then comp = result.host_computer
+		if typeof(result) == "computer" then comp = result
+
+		file = comp.File("/etc/passwd")
+		if not file then continue
+		cont = file.content
+		if not cont then continue
+		pass = cont.split("\n")[0]
+		if shell then quit(shell,pass)
+	end for
+end for
+if shell then shell.start_terminal
+exit("Exploit Failed!")
