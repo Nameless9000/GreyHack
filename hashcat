@@ -1,5 +1,9 @@
 //command: hashcat
 cryptools = include_lib("/lib/crypto.so")
+if not cryptools then
+	currentPath = get_shell.host_computer.current_path
+	cryptools = include_lib(currentPath + "/crypto.so")
+end if
 if not cryptools then exit("Error: Missing crypto library")
 
 GetPassword = function(userPass)
@@ -16,7 +20,6 @@ password = null
 
 userPass = hash.split(":")
 password = GetPassword(userPass)
-	
+
 if not password then exit("Can't find password :(")
 print("Cracked! Login: "+userPass[0]+"@"+password)
-	
